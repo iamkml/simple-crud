@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Save to Google Sheet Store</title>
+  <title>Save to Google Sheet</title>
 </head>
 <body>
   <h2>Contact Form</h2>
@@ -30,7 +30,7 @@
       })
       .then(res => res.json())
       .then(response => {
-        document.getElementById("status").innerText = "✅ Data Saved Successfully!";
+        alert("Data saved: " + response.result)
         document.getElementById("myForm").reset(); // Reset form after save
       })
       .catch(err => alert("Error: " + err));
