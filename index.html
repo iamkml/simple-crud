@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple CRUD with Google Sheets</title>
+</head>
+<body>
+  <h1>Google Sheets CRUD</h1>
+
+  <h3>Add Record</h3>
+  <input id="name" placeholder="Name">
+  <input id="email" placeholder="Email">
+  <input id="notes" placeholder="Notes">
+  <button onclick="create()">Add</button>
+
+  <h3>Records</h3>
+  <div id="data"></div>
+
+<script>
+const API = "YOUR_WEB_APP_URL"; // replace with your Apps Script URL
+
+async function create() {
+  let data = {
+    name: document.getElementById("name").value,
+    email: document.getElementById("email").value,
+    notes: document.getElementById("notes").value
+  };
+  await fetch(API + "?action=create", {
+    method: "POST",
+    body: JSON.stringify(data)
+  });
+  read();
+}
+
+async function read() {
+  let res = await fetch(API + "?action=read");
+  let json = await res.json();
+  document.getElementById("data").innerHTML =
+    json.map(r => `<p>${r.id} - ${r.name} - ${r.email} - ${r.notes} 
+      <button onclick='update(${r.id})'>Edit</button> 
+      <button onclick='del(${r.id})'>Delete</button></p>`).join("");
+}
+
+async function update(id) {
+  let name = prompt("Enter new name");
+  let email = prompt("Enter new email");
+  let notes = prompt("Enter new notes");
+  await fetch(API + "?action=update", {
+    method: "POST",
+    body: JSON.stringify({ id, name, email, notes })
+  });
+  read();
+}
+
+async function del(id) {
+  await fetch(API + "?action=delete", {
+    method: "POST",
+    body: JSON.stringify({ id })
+  });
+  read();
+}
+
+read();
+</script>
+</body>
+</html>
