@@ -19,7 +19,12 @@
   <script>
    
     const scriptURL = "https://script.google.com/macros/s/AKfycbxVCop6-1zk_ZF-ThOvWw657UNvMtmcSV1500auq2cVrR0zgs8cgeJ_yRm-ZSGeLOKCxw/exec"; // paste your Apps Script URL
-
+    
+    async function loadData() {
+      let res = await fetch(scriptURL);
+      let data = await res.json();
+      document.getElementById("output").innerText = JSON.stringify(data);
+    }
     document.getElementById("myForm").addEventListener("submit", function(e) {
       e.preventDefault();
 
@@ -41,11 +46,7 @@
       .catch(err => alert("Error: " + err));
     });
 
-    async function loadData() {
-      let res = await fetch(scriptURL);
-      let data = await res.json();
-      document.getElementById("output").innerText = JSON.stringify(data);
-    }
+    
   </script>
 </body>
 </html>
