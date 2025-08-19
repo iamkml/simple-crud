@@ -1,65 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Simple CRUD with Google Sheets</title>
+  <title>Save to Google Sheet</title>
 </head>
 <body>
-  <h1>Google Sheets CRUD</h1>
+  <h2>Contact Form</h2>
+  <form id="myForm">
+    <input type="text" id="name" placeholder="Enter Name"><br><br>
+    <input type="email" id="email" placeholder="Enter Email"><br><br>
+    <textarea id="message" placeholder="Enter Message"></textarea><br><br>
+    <button type="submit">Submit</button>
+  </form>
 
-  <h3>Add Record</h3>
-  <input id="name" placeholder="Name">
-  <input id="email" placeholder="Email">
-  <input id="notes" placeholder="Notes">
-  <button onclick="create()">Add</button>
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbw5t6Kz6TDfNmf74g0N_hIcTic3t1XE_Ab7DREFVNBP25fnmr0HROwzBiTI7xakJCqpxA/exec"; // paste your Apps Script URL
 
-  <h3>Records</h3>
-  <div id="data"></div>
+    document.getElementById("myForm").addEventListener("submit", function(e) {
+      e.preventDefault();
 
-<script>
-const API = "https://script.google.com/macros/s/AKfycbzj0gXpf_TBjajoXpRJf1N_pe-Ozcw_jqtyn9cTGFXjAKtAhimkxNuRT6Y3oh1B8qY5GA/exec"; // replace with your Apps Script URL
+      let data = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        message: document.getElementById("message").value
+      };
 
-async function create() {
-  let data = {
-    name: document.getElementById("name").value,
-    email: document.getElementById("email").value,
-    notes: document.getElementById("notes").value
-  };
-  await fetch(API + "?action=create", {
-    method: "POST",
-    body: JSON.stringify(data)
-  });
-  read();
-}
-
-async function read() {
-  let res = await fetch(API + "?action=read");
-  let json = await res.json();
-  document.getElementById("data").innerHTML =
-    json.map(r => `<p>${r.id} - ${r.name} - ${r.email} - ${r.notes} 
-      <button onclick='update(${r.id})'>Edit</button> 
-      <button onclick='del(${r.id})'>Delete</button></p>`).join("");
-}
-
-async function update(id) {
-  let name = prompt("Enter new name");
-  let email = prompt("Enter new email");
-  let notes = prompt("Enter new notes");
-  await fetch(API + "?action=update", {
-    method: "POST",
-    body: JSON.stringify({ id, name, email, notes })
-  });
-  read();
-}
-
-async function del(id) {
-  await fetch(API + "?action=delete", {
-    method: "POST",
-    body: JSON.stringify({ id })
-  });
-  read();
-}
-
-read();
-</script>
+      fetch(scriptURL, {
+        method: "POST",
+        body: JSON.stringify(data)
+      })
+      .then(res => res.json())
+      .then(response => alert("Data saved: " + response.result))
+      .catch(err => alert("Error: " + err));
+    });
+  </script>
 </body>
 </html>
