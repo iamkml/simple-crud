@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Save to Google Sheet</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      padding: 50px 20px;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+      transition: all 0.3s;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0,123,255,0.3);
+      outline: none;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      width: 100%;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #output {
+      margin-top: 20px;
+      background-color: #f1f3f6;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+      min-height: 60px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tr:hover {
+      background-color: #e6f0ff;
+    }
+
+    hr {
+      margin: 25px 0;
+      border: none;
+      border-top: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Contact Form!</h2>
+    <form id="myForm">
+      <input type="text" id="name" placeholder="Enter Name" required>
+      <input type="email" id="email" placeholder="Enter Email" required>
+      <textarea id="message" placeholder="Enter Message" rows="4" required></textarea>
+      <button type="submit">Submit</button>
+    </form>
+
+    <hr/>
+
+    <button onclick="loadData()">Load Data</button>
+    <div id="output"></div>
+  </div>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwr4Hgg_c7KVlpKtF38qRh7M0dPbqqLT2dcpKbbiO0VoKl5PVc2tx_jVd7O75NRyVOL7A/exec"; // Replace with your Google Script URL
+
+    async function loadData() {
+      try {
+        let res = await fetch(scriptURL);
+        let data = await res.json();
+    
+        if (data.length === 0) {
+          document.getElementById("output").innerHTML = "No records found.";
+          return;
+        }
+
+        let table = `<table>
+          <tr>
+            
+          </tr>`;
+
+          data.forEach(item => {
+            table += `<tr>
+            <td>${item[0]}</td>
+            <td>${item[1]}</td>
+            <td>${item[2]}</td>
+            
+          </tr>`;
+        });
+        table += `</table>`;
+        document.getElementById("output").innerHTML = table;
+      } catch (err) {
+        alert("Error loading data: " + err);
+      }
+    }
+    setInterval(loadData, 1000);
+    document.getElementById("myForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      console.log(document.getElementById("message").value);
+      let data = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        message: document.getElementById("message").value
+      };
+     
+      fetch(scriptURL, {
+        method: "POST",
+        body: JSON.stringify(data)
+      })
+      .then(res => res.json())
+      .then(response => {
+        alert("Data saved: " + response.result);
+        document.getElementById("myForm").reset(); // Reset form after save
+      })
+      .catch(err => alert("Error: " + err));
+    });
+  </script>
+
+</body>
+</html>
